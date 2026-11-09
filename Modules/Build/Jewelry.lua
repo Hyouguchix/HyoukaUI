@@ -247,7 +247,7 @@ function J.SlotLabel(i)
 	return B.T(B.SLOT_KEYS[i])
 end
 
-local ROW_W, ROW_H = 199, 24
+local ROW_W, ROW_H = 225, 24
 
 local function JoinTags(rec, n)
 	local sep = " "..H.Fonts.SYM.dot.." "

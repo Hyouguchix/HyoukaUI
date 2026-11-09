@@ -84,6 +84,8 @@ local function Value(key, t)
 end
 
 local RATES = {}
+local VOLATILE = { dmg_done = true, dmg_ps = true, dmg_taken = true }
+local VOLATILE_GAP = 1
 
 -- Десятые из целого v (в десятых): "118.4"; строки в кэше, значение меняется каждую секунду.
 local function RateStr(v)
@@ -111,13 +113,20 @@ local function Update(slowOnly)
 		return
 	end
 	local t = H.Run.Time()
+	local now = H.Now()
 	for i = 1, getn(ROWS) do
 		local def = ROWS[i]
 		local row = TR.rows[i]
 		local v = Value(def[1], t)
 		if v ~= row.v then
-			row.v = v
-			row.valFs:SetText(Text(def[2], v))
+			-- Урон и скорость урона меняются несколько раз в секунду (в бою до 4 раз): перерисовка текста каждый раз дергает
+			-- панель. Такие строки обновляем не чаще раза в VOLATILE_GAP секунд, остальные (счетчики, время) сразу.
+			if VOLATILE[def[1]] and row.at and now - row.at < VOLATILE_GAP and row.v ~= nil then
+				-- пропускаем: следующее событие RUN или METER после паузы допишет актуальное число
+			else
+				row.v, row.at = v, now
+				row.valFs:SetText(Text(def[2], v))
+			end
 		end
 	end
 end
@@ -361,6 +370,9 @@ Tr.Part("thisrun", {
 			end
 		end
 		Relayout()
+	end,
+	slow = function()
+		Update()
 	end,
 	on = { RUN = Update, METER = Update, COMBAT_EVENT = OnCombat, LEVEL_CHANGED = Update },
 	dump = function(out)

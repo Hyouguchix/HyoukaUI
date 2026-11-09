@@ -90,12 +90,17 @@ end
 local function Paint(seg, lair, i)
 	local C = Tr.C
 	local state = lair.state
+	local prev = seg.state
 	seg.state = state
 	seg.fill:Hide()
-	seg.timeFs:SetText("")
-	seg.pct = -1
+	-- Текст не стираем при каждой перерисовке: пустое место между SetText("") и следующим тиком мерцало раз в секунду
+	-- (отсчет возрождения писался заново на каждое событие расписания). Стираем только при смене состояния.
+	if prev ~= state then
+		seg.timeFs:SetText("")
+		seg.pct = -1
+		seg.sec = -1
+	end
 	Tr.Color(seg.timeFs, C.white)
-	seg.sec = -1
 	if state == "awake" then
 		-- dark mode ретейла: потерянное здоровье серое, остаток темный (как у рамок игрока и цели)
 		Tr.Paint(seg.bg, C.lost)
@@ -118,6 +123,9 @@ local function Paint(seg, lair, i)
 				seg.timeFs:SetText(pct.."%")
 			end
 			Tr.Color(seg.timeFs, C.orange)
+		elseif seg.pct ~= -1 then
+			seg.pct = -1
+			seg.timeFs:SetText("")
 		end
 	elseif state == "empty" then
 		if H.Schedule.RespawnIn(i) then

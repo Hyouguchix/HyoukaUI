@@ -1,6 +1,6 @@
 -- HyoukaUI: модуль Build, список сборки (кусок build.list, plan 3.3).
 --
--- Стопка полос в геометрии KickTracker (199x24 ретейл-px, шаг 25, рост вверх). Сверху заголовок "Сборка" акцентом
+-- Стопка полос в геометрии KickTracker (225x24 ретейл-px (было 199, расширено под длинные значения отката; ширина строк бижутерии Jewelry.ROW_W та же), шаг 25, рост вверх). Сверху заголовок "Сборка" акцентом
 -- и счетчик "N/6" (красный при 6/6), затем 6 строк способностей по рангу (старший первым, при равенстве раньше
 -- по слоту), недостающие слоты бледными строками "пустой слот", отдельная строка расовой способности с меткой
 -- "(раса)", ниже раздел "Бижутерия" (строки Jewelry.lua). Строка: иконка, имя, справа колонки Info, Откат, Ранг.
@@ -22,7 +22,7 @@ local Fm = H.Format
 local L = {}
 B.List = L
 
-local C = { W = 199, ROW = 24, STEP = 25, HEAD = 16, SLOTS = 6, PAD = 4, RANKW = 20, CDW = 34, INFOW = 28, SYM = 7 }
+local C = { W = 225, ROW = 24, STEP = 25, HEAD = 16, SLOTS = 6, PAD = 4, RANKW = 20, CDW = 46, INFOW = 28, SYM = 7 }
 local S = { rows = {}, jrows = {}, order = {}, height = 0, shown = false }
 L.S, L.C = S, C
 
@@ -378,19 +378,29 @@ end
 -- Динамика: откат и убывание бафа
 ----------------------------------------------------------------------------------------
 
--- Откат только целыми секундами (жалоба пользователя 2026-11-09: десятые и сотые "мигали" до 100 раз в секунду).
-local function CdKey(rem)
-	if rem <= 0 then
+-- Колонка "Откат" показывает время восстановления способности (полный кулдаун из AZS_SPELLS), а не бегущий таймер:
+-- живой откат пользователь и так видит на панели способностей, а статичный текст не мигает (жалобы 2026-11-09 и 2026-11-10).
+-- Меняется только вместе с самим кулдауном (улучшение способности), поэтому пишется по смене значения.
+local function CdKey(dur)
+	if not dur or dur <= 0 then
 		return 0
 	end
-	return math.ceil(rem)
+	return math.floor(dur * 100 + 0.5)
 end
 
-local function CdString(rem, key)
-	if rem >= 60 then
-		return Fm.CdText(rem)
+local function CdString(dur)
+	if dur >= 60 then
+		return Fm.CdText(dur)
 	end
-	return string.format("%d%s", key, H.L.unit_sec)
+	local hundredths = math.floor(dur * 100 + 0.5)
+	local tenths = math.floor(hundredths / 10 + 0.5)
+	if hundredths < 100 and hundredths ~= tenths * 10 then
+		return string.format("%d.%02d%s", math.floor(hundredths / 100), math.mod(hundredths, 100), H.L.unit_sec)
+	end
+	if math.mod(tenths, 10) == 0 then
+		return string.format("%d%s", math.floor(tenths / 10), H.L.unit_sec)
+	end
+	return string.format("%d.%d%s", math.floor(tenths / 10), math.mod(tenths, 10), H.L.unit_sec)
 end
 
 local function TickRow(row)
@@ -399,15 +409,12 @@ local function TickRow(row)
 		return
 	end
 	if S.colCd then
-		local rem = H.Spells.Remaining(i)
-		if rem > 0 then
-			-- устойчивый конец отката: строки данных с дрожью не переворачивают целую секунду туда-обратно
-			rem = H.Run.SteadyEnd(3000 + i, H.Now() + rem) - H.Now()
-		end
-		local key = CdKey(rem)
+		local r = H.Spells.Row(i)
+		local dur = r and type(r.cdmax) == "number" and r.cdmax > 0 and H.Rules.CooldownDuration(r.cdmax) or 0
+		local key = CdKey(dur)
 		if key ~= row.cdKey then
 			row.cdKey = key
-			row.cd:SetText(key == 0 and "" or CdString(rem, key))
+			row.cd:SetText(key == 0 and "" or CdString(dur))
 		end
 	end
 	local id = row.spellId

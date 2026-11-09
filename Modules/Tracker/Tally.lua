@@ -15,7 +15,7 @@ local Fm = H.Format
 
 local PW = 230
 local ICON = 12                 -- значок перед числом, ретейл-px
-local TEXD = "Interface\AddOns\HyoukaUI\Media\Textures\\"
+local TEXD = "Interface\\AddOns\\HyoukaUI\\Media\\Textures\\"
 local ICONS = { TEXD.."mark_skull", TEXD.."mark_coin", TEXD.."mark_chest" }
 local SEP = { 0.31, 0.31, 0.31, 0.9 }
 

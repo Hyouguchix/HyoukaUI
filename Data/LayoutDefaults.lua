@@ -117,8 +117,8 @@ H.LayoutDefaults = {
 		-- Список сборки: геометрия KickTracker AES.
 		["build.list"] = {
 			label = "Сборка", point = "BOTTOMLEFT", rel = "UIParent", relPoint = "BOTTOMLEFT", x = 513, y = 768,
-			w = 199, h = 24, step = 25, dir = "UP", overCards = true,
-			src = "spec 2.3 стр.197 (KickTracker 199x24, шаг 1 вверх, BOTTOMLEFT 513 от левого края, низ y 672 от верха)",
+			w = 225, h = 24, step = 25, dir = "UP", overCards = true,
+			src = "spec 2.3 стр.197 (KickTracker 199x24, расширено до 225 под длинные значения отката, шаг 1 вверх, BOTTOMLEFT 513 от левого края, низ y 672 от верха)",
 		},
 
 		-- Правая колонка: миникарта, полосы боссов, трекер.

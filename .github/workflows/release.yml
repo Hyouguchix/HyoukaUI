@@ -25,8 +25,12 @@ jobs:
           (cd build && zip -qr "../HyoukaUI-${VERSION}.zip" HyoukaUI)
           unzip -l "HyoukaUI-${VERSION}.zip" | tail -1
 
-      - name: Release notes from commits
+      - name: Release notes
         run: |
+          if [ -f ".github/release-notes/${GITHUB_REF_NAME}.md" ]; then
+            cp ".github/release-notes/${GITHUB_REF_NAME}.md" notes.md
+            exit 0
+          fi
           PREV=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
           if [ -n "$PREV" ]; then RANGE="$PREV..${GITHUB_REF_NAME}"; else RANGE="${GITHUB_REF_NAME}"; fi
           git log --pretty='- %s' $RANGE > notes.md
@@ -39,6 +43,7 @@ jobs:
           ZIP="HyoukaUI-${GITHUB_REF_NAME}.zip"
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
             gh release upload "${GITHUB_REF_NAME}" "$ZIP" --clobber
+            gh release edit "${GITHUB_REF_NAME}" --notes-file notes.md
           else
             gh release create "${GITHUB_REF_NAME}" "$ZIP"               --title "HyoukaUI ${GITHUB_REF_NAME#v}" --notes-file notes.md
           fi

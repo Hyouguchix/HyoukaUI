@@ -22,7 +22,9 @@ jobs:
           VERSION="${GITHUB_REF_NAME}"
           mkdir -p build/HyoukaUI
           git ls-files -z | grep -zv '^\.github/' | grep -zv '^\.gitignore$' | xargs -0 -I{} cp --parents {} build/HyoukaUI/
-          (cd build && zip -qr "../HyoukaUI-${VERSION}.zip" HyoukaUI)
+          # Reproducible zip: fixed file times (tag commit time), sorted names, no extra attributes.
+          find build -exec touch -h -d "@$(git log -1 --format=%ct)" {} +
+          (cd build && find HyoukaUI -type f | LC_ALL=C sort | zip -X -q "../HyoukaUI-${VERSION}.zip" -@)
           unzip -l "HyoukaUI-${VERSION}.zip" | tail -1
 
       - name: Release notes
@@ -42,7 +44,8 @@ jobs:
         run: |
           ZIP="HyoukaUI-${GITHUB_REF_NAME}.zip"
           if gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
-            gh release upload "${GITHUB_REF_NAME}" "$ZIP" --clobber
+            # Never replace a published asset: the site pins the checksum of the first upload.
+            gh release view "${GITHUB_REF_NAME}" --json assets --jq '.assets[].name' | grep -qx "$ZIP" || gh release upload "${GITHUB_REF_NAME}" "$ZIP"
             gh release edit "${GITHUB_REF_NAME}" --notes-file notes.md
           else
             gh release create "${GITHUB_REF_NAME}" "$ZIP"               --title "HyoukaUI ${GITHUB_REF_NAME#v}" --notes-file notes.md

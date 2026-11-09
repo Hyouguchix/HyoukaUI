@@ -1,5 +1,8 @@
 # HyoukaUI
 
+![Uploading Screenshot_1.png…]()
+
+
 A flat, dark, modular interface for **Azeroth Survivors**, styled after a retail WoW layout: 1 physical pixel black borders, accent `#7381FF`, Expressway font. Built from scratch as a replacement for SurvivorUI. Works on the game's WoW 1.12 API (Lua 5.0).
 
 Плоский тёмный модульный интерфейс для **Azeroth Survivors** в стиле ретейл-раскладки: рамки в 1 физический пиксель, акцент `#7381FF`, шрифт Expressway. Написан с нуля как замена SurvivorUI.

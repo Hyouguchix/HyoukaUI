@@ -14,6 +14,9 @@ local K = H.Kit
 local Fm = H.Format
 
 local PW = 230
+local ICON = 12                 -- значок перед числом, ретейл-px
+local TEXD = "Interface\AddOns\HyoukaUI\Media\Textures\\"
+local ICONS = { TEXD.."mark_skull", TEXD.."mark_coin", TEXD.."mark_chest" }
 local SEP = { 0.31, 0.31, 0.31, 0.9 }
 
 local TY = { cells = {}, seps = {} }
@@ -41,8 +44,13 @@ local function Layout()
 		local cx = third * (i - 0.5)
 		cell.label:ClearAllPoints()
 		cell.label:SetPoint("TOP", panel, "TOPLEFT", cx, -R(5))
+		-- Число сдвинуто вправо на полвстречи значка, чтобы группа "значок + число" стояла по центру ячейки.
 		cell.val:ClearAllPoints()
-		cell.val:SetPoint("BOTTOM", panel, "BOTTOMLEFT", cx, R(5))
+		cell.val:SetPoint("BOTTOM", panel, "BOTTOMLEFT", cx + R(ICON + 3) / 2, R(5))
+		cell.icon:SetWidth(R(ICON))
+		cell.icon:SetHeight(R(ICON))
+		cell.icon:ClearAllPoints()
+		cell.icon:SetPoint("RIGHT", cell.val, "LEFT", -R(3), 0)
 		local sep = TY.seps[i]
 		if sep then
 			sep:ClearAllPoints()
@@ -100,7 +108,10 @@ local function Build()
 		Tr.Color(label, Tr.C.gray)
 		local val = K.Text(panel, "body", nil, "CENTER")
 		Tr.Color(val, Tr.C.white)
-		TY.cells[i] = { label = label, val = val }
+		local icon = panel:CreateTexture(nil, "OVERLAY")
+		icon:SetTexture(ICONS[i])
+		Tr.Paint(icon, i == 1 and Tr.C.white or Tr.C.gold)
+		TY.cells[i] = { label = label, val = val, icon = icon }
 		if i < 3 then
 			TY.seps[i] = Tr.Fill(panel, SEP, "ARTWORK")
 		end

@@ -267,9 +267,36 @@ local function Build(view, result, page)
 	for i = 1, getn(rows) do
 		local row = rows[i]
 		local amount, key = Measure(row, measure)
+		local dup = nil
 		if key > 0 or (measure == "rate" and amount > 0) then
+			-- Ранги одной способности (ability:consecration:r1, :r4...) после повышения уровня приходят отдельными строками:
+			-- сводим в одну строку по ключу без ранга, отдельно обычные и проковые.
+			local base = not page.party and row.sourceKey and string.gsub(row.sourceKey, ":r%d+$", "") or nil
+			if base and base ~= row.sourceKey then
+				local isProc = row.procClassification == "proc" or (row.nativeProc == true and row.procClassification ~= "mixed")
+				for j = 1, n do
+					local o = items[j]
+					if o.baseKey == base and o.proc == isProc and o.ownerId == row.ownerId and o.actorId == row.actorId then
+						dup = o
+						break
+					end
+				end
+			end
+			if dup then
+				dup.amount = dup.amount + amount
+				dup.sortKey = dup.sortKey + key
+				local r2 = D.RowRate(row)
+				if r2 then
+					dup.rate = (dup.rate or 0) + r2
+				end
+				if measure ~= "window" then
+					dup.share = dup.share + (row.share or 0)
+					dup.pct = floor(dup.share * 100)
+				end
+			else
 			n = n + 1
 			local it = Item(view, n)
+			it.baseKey = base
 			it.row, it.tie, it.sortKey, it.amount = row, row.tieOrder or i, key, amount
 			it.rate = D.RowRate(row)
 			if measure == "window" then
@@ -288,6 +315,7 @@ local function Build(view, result, page)
 				if FillSource(it, result, row, page) then
 					pending = true
 				end
+			end
 			end
 		end
 	end

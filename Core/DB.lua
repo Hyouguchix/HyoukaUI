@@ -177,6 +177,7 @@ function D.Init()
 	end
 	local db = HyoukaUIDB
 	local fresh = (db.schema == nil)
+	local seed = fresh and next(db.modules or {}) == nil
 	db.general = db.general or {}
 	db.modules = db.modules or {}
 	db.layout = db.layout or {}
@@ -203,6 +204,9 @@ function D.Init()
 		db.schema = target
 	end
 	D.ready = true
+	if seed and H.DefaultProfile and H.DefaultProfile.auto ~= false then
+		H.DefaultProfile.Apply()
+	end
 	for name in pairs(D.specs) do
 		D.MigrateModule(name)
 	end

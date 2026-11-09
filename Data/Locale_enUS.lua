@@ -53,6 +53,7 @@ H.Locales.enUS = {
 	-- демо
 	demo_solo = "Solo run", demo_coop = "Co-op run", demo_off = "Preview off",
 	-- сообщения
+	profile_applied = "default profile applied, type /reload", profile_help = "/hui preset default - apply the default preset",
 	msg_module_off = "module %s is off because of errors, /hui errors",
 
 	-- ядро: окна настроек, перемещение, команды /hui

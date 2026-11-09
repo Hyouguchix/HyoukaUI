@@ -125,6 +125,7 @@ Modules\Chat\EditBox.lua
 Modules\Chat\Fade.lua
 Modules\Chat\ChatOptions.lua
 Core\Slash.lua
+Core\DefaultProfile.lua
 Core\Debug.lua
 Core\DebugData.lua
 Core\DebugModules.lua

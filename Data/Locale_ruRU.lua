@@ -34,6 +34,7 @@ H.Locales.ruRU = {
 	char_title = "Персонаж", char_empty = "Начните забег, чтобы увидеть статы", char_attack = "Атака", char_defense = "Защита",
 	char_other = "Прочее",
 	demo_solo = "Соло-забег", demo_coop = "Кооп-забег", demo_off = "Просмотр выключен",
+	profile_applied = "профиль по умолчанию применен, введите /reload", profile_help = "/hui preset default - применить стартовый набор настроек",
 	msg_module_off = "модуль %s выключен из-за ошибки, /hui errors",
 
 	-- ядро: окна настроек, перемещение, команды /hui

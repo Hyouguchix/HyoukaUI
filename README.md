@@ -32,6 +32,8 @@ Every module has three modes: **Off**, **Alongside** (draws next to the stock UI
 
 To roll everything back: `/hui module all off`, then `/hui hud reset`.
 
+**Default preset.** On a clean install HyoukaUI starts with the author's setup: all modules in Replace mode with his option choices. This is what you see right after installing. `/hui preset default` applies it again over your own settings (then `/reload`).
+
 ## Install / Установка
 
 1. Copy this folder into the game's `AddOns` directory so that you get `AddOns/HyoukaUI/HyoukaUI.toc`.

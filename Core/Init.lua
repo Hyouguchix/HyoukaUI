@@ -6,7 +6,7 @@ HyoukaUI = HyoukaUI or {}
 local H = HyoukaUI
 
 H.name = "HyoukaUI"
-H.version = "0.1.0"
+H.version = "0.1.1"
 H.stage = "1"
 H.SCHEMA = 1
 

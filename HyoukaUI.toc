@@ -1,7 +1,7 @@
 ## Interface: 11200
 ## Title: HyoukaUI
 ## Notes: Flat dark modular interface for Azeroth Survivors: frames, damage meter, run tracker, build list, nameplates, chat.
-## Version: 0.1.0
+## Version: 0.1.1
 ## SavedVariables: HyoukaUIDB
 ## OptionalDeps: SurvivorUI, SurvivorUITweaks
 Core\Init.lua
